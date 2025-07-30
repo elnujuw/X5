@@ -6,7 +6,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.junle.common.annotation.Log;
 import org.junle.common.core.controller.BaseController;
 import org.junle.common.core.domain.AjaxResult;
-import org.junle.common.core.domain.entity.SysDept;
+import org.junle.common.core.domain.entity.SysOrganization;
 import org.junle.common.core.domain.entity.SysRole;
 import org.junle.common.core.domain.entity.SysUser;
 import org.junle.common.core.domain.model.LoginUser;
@@ -28,7 +28,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.junle.framework.web.service.SysPermissionService;
 import org.junle.framework.web.service.TokenService;
-import org.junle.system.service.ISysDeptService;
+import org.junle.system.service.ISysOrganizationService;
 import org.junle.system.service.ISysRoleService;
 import org.junle.system.service.ISysUserService;
 
@@ -54,7 +54,7 @@ public class SysRoleController extends BaseController
     private ISysUserService userService;
 
     @Autowired
-    private ISysDeptService deptService;
+    private ISysOrganizationService organizationService;
 
     @PreAuthorize("@ss.hasPermi('system:role:list')")
     @GetMapping("/list")
@@ -249,15 +249,15 @@ public class SysRoleController extends BaseController
     }
 
     /**
-     * 获取对应角色部门树列表
+     * 获取对应角色组织架构树列表
      */
     @PreAuthorize("@ss.hasPermi('system:role:query')")
-    @GetMapping(value = "/deptTree/{roleId}")
-    public AjaxResult deptTree(@PathVariable("roleId") Long roleId)
+    @GetMapping(value = "/organizationTree/{roleId}")
+    public AjaxResult organizationTree(@PathVariable("roleId") Long roleId)
     {
         AjaxResult ajax = AjaxResult.success();
-        ajax.put("checkedKeys", deptService.selectDeptListByRoleId(roleId));
-        ajax.put("depts", deptService.selectDeptTreeList(new SysDept()));
+        ajax.put("checkedKeys", organizationService.selectOrganizationListByRoleId(roleId));
+        ajax.put("organizations", organizationService.selectOrganizationTreeList(new SysOrganization()));
         return ajax;
     }
 }

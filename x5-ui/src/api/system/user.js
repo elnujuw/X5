@@ -1,5 +1,6 @@
 import request from '@/utils/request'
 import { parseStrEmpty } from "@/utils/x5";
+import { encrypt } from '@/utils/jsencrypt'
 
 // 查询用户列表
 export function listUser(query) {
@@ -46,10 +47,13 @@ export function delUser(userId) {
 
 // 用户密码重置
 export function resetUserPwd(userId, password) {
+  password = encrypt(password);
+  
   const data = {
     userId,
     password
   }
+  
   return request({
     url: '/system/user/resetPwd',
     method: 'put',
@@ -89,10 +93,14 @@ export function updateUserProfile(data) {
 
 // 用户密码重置
 export function updateUserPwd(oldPassword, newPassword) {
+  oldPassword = encrypt(oldPassword);
+  newPassword = encrypt(newPassword);
+
   const data = {
     oldPassword,
     newPassword
   }
+  
   return request({
     url: '/system/user/profile/updatePwd',
     method: 'put',
@@ -127,10 +135,10 @@ export function updateAuthRole(data) {
   })
 }
 
-// 查询部门下拉树结构
-export function deptTreeSelect() {
+// 查询组织架构下拉树结构
+export function organizationTreeSelect() {
   return request({
-    url: '/system/user/deptTree',
+    url: '/system/user/organizationTree',
     method: 'get'
   })
 }

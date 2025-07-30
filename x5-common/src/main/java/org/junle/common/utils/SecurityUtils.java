@@ -38,17 +38,17 @@ public class SecurityUtils
     }
 
     /**
-     * 获取部门ID
+     * 获取组织架构ID
      **/
-    public static Long getDeptId()
+    public static Long getOrganizationId()
     {
         try
         {
-            return getLoginUser().getDeptId();
+            return getLoginUser().getOrganizationId();
         }
         catch (Exception e)
         {
-            throw new ServiceException("获取部门ID异常", HttpStatus.UNAUTHORIZED);
+            throw new ServiceException("获取组织架构ID异常", HttpStatus.UNAUTHORIZED);
         }
     }
 

@@ -26,8 +26,8 @@
                         <div class="pull-right">{{ state.user.email }}</div>
                      </li>
                      <li class="list-group-item">
-                        <svg-icon icon-class="tree" />所属部门
-                        <div class="pull-right" v-if="state.user.dept">{{ state.user.dept.deptName }} / {{ state.postGroup }}</div>
+                        <svg-icon icon-class="tree" />所属组织架构
+                        <div class="pull-right" v-if="state.user.organization">{{ state.user.organization.organizationName }} / {{ state.postGroup }}</div>
                      </li>
                      <li class="list-group-item">
                         <svg-icon icon-class="peoples" />所属角色

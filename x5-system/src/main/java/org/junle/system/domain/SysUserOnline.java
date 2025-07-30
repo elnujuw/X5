@@ -10,8 +10,8 @@ public class SysUserOnline
     /** 会话编号 */
     private String tokenId;
 
-    /** 部门名称 */
-    private String deptName;
+    /** 组织架构名称 */
+    private String organizationName;
 
     /** 用户名称 */
     private String userName;
@@ -41,14 +41,14 @@ public class SysUserOnline
         this.tokenId = tokenId;
     }
 
-    public String getDeptName()
+    public String getOrganizationName()
     {
-        return deptName;
+        return organizationName;
     }
 
-    public void setDeptName(String deptName)
+    public void setOrganizationName(String organizationName)
     {
-        this.deptName = deptName;
+        this.organizationName = organizationName;
     }
 
     public String getUserName()

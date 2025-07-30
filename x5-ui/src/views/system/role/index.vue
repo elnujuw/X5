@@ -215,17 +215,17 @@
                </el-select>
             </el-form-item>
             <el-form-item label="数据权限" v-show="form.dataScope == 2">
-               <el-checkbox v-model="deptExpand" @change="handleCheckedTreeExpand($event, 'dept')">展开/折叠</el-checkbox>
-               <el-checkbox v-model="deptNodeAll" @change="handleCheckedTreeNodeAll($event, 'dept')">全选/全不选</el-checkbox>
-               <el-checkbox v-model="form.deptCheckStrictly" @change="handleCheckedTreeConnect($event, 'dept')">父子联动</el-checkbox>
+               <el-checkbox v-model="organizationExpand" @change="handleCheckedTreeExpand($event, 'organization')">展开/折叠</el-checkbox>
+               <el-checkbox v-model="organizationNodeAll" @change="handleCheckedTreeNodeAll($event, 'organization')">全选/全不选</el-checkbox>
+               <el-checkbox v-model="form.organizationCheckStrictly" @change="handleCheckedTreeConnect($event, 'organization')">父子联动</el-checkbox>
                <el-tree
                   class="tree-border"
-                  :data="deptOptions"
+                  :data="organizationOptions"
                   show-checkbox
                   default-expand-all
-                  ref="deptRef"
+                  ref="organizationRef"
                   node-key="id"
-                  :check-strictly="!form.deptCheckStrictly"
+                  :check-strictly="!form.organizationCheckStrictly"
                   empty-text="加载中，请稍候"
                   :props="{ label: 'label', children: 'children' }"
                ></el-tree>
@@ -242,7 +242,7 @@
 </template>
 
 <script setup name="Role">
-import { addRole, changeRoleStatus, dataScope, delRole, getRole, listRole, updateRole, deptTreeSelect } from "@/api/system/role";
+import { addRole, changeRoleStatus, dataScope, delRole, getRole, listRole, updateRole, organizationTreeSelect } from "@/api/system/role";
 import { roleMenuTreeselect, treeselect as menuTreeselect } from "@/api/system/menu";
 
 const router = useRouter();
@@ -262,19 +262,19 @@ const dateRange = ref([]);
 const menuOptions = ref([]);
 const menuExpand = ref(false);
 const menuNodeAll = ref(false);
-const deptExpand = ref(true);
-const deptNodeAll = ref(false);
-const deptOptions = ref([]);
+const organizationExpand = ref(true);
+const organizationNodeAll = ref(false);
+const organizationOptions = ref([]);
 const openDataScope = ref(false);
 const menuRef = ref(null);
-const deptRef = ref(null);
+const organizationRef = ref(null);
 
 /** 数据范围选项*/
 const dataScopeOptions = ref([
   { value: "1", label: "全部数据权限" },
   { value: "2", label: "自定数据权限" },
-  { value: "3", label: "本部门数据权限" },
-  { value: "4", label: "本部门及以下数据权限" },
+  { value: "3", label: "本组织架构数据权限" },
+  { value: "4", label: "本组织架构及以下数据权限" },
   { value: "5", label: "仅本人数据权限" }
 ]);
 
@@ -382,12 +382,12 @@ function getMenuTreeselect() {
   });
 }
 
-/** 所有部门节点数据 */
-function getDeptAllCheckedKeys() {
-  // 目前被选中的部门节点
-  let checkedKeys = deptRef.value.getCheckedKeys();
-  // 半选中的部门节点
-  let halfCheckedKeys = deptRef.value.getHalfCheckedKeys();
+/** 所有组织架构节点数据 */
+function getOrganizationAllCheckedKeys() {
+  // 目前被选中的组织架构节点
+  let checkedKeys = organizationRef.value.getCheckedKeys();
+  // 半选中的组织架构节点
+  let halfCheckedKeys = organizationRef.value.getHalfCheckedKeys();
   checkedKeys.unshift.apply(checkedKeys, halfCheckedKeys);
   return checkedKeys;
 }
@@ -399,8 +399,8 @@ function reset() {
   }
   menuExpand.value = false;
   menuNodeAll.value = false;
-  deptExpand.value = true;
-  deptNodeAll.value = false;
+  organizationExpand.value = true;
+  organizationNodeAll.value = false;
   form.value = {
     roleId: undefined,
     roleName: undefined,
@@ -408,9 +408,9 @@ function reset() {
     roleSort: 0,
     status: "0",
     menuIds: [],
-    deptIds: [],
+    organizationIds: [],
     menuCheckStrictly: true,
-    deptCheckStrictly: true,
+    organizationCheckStrictly: true,
     remark: undefined
   };
   proxy.resetForm("roleRef");
@@ -455,10 +455,10 @@ function getRoleMenuTreeselect(roleId) {
   });
 }
 
-/** 根据角色ID查询部门树结构 */
-function getDeptTree(roleId) {
-  return deptTreeSelect(roleId).then(response => {
-    deptOptions.value = response.depts;
+/** 根据角色ID查询组织架构树结构 */
+function getOrganizationTree(roleId) {
+  return organizationTreeSelect(roleId).then(response => {
+    organizationOptions.value = response.organizations;
     return response;
   });
 }
@@ -470,10 +470,10 @@ function handleCheckedTreeExpand(value, type) {
     for (let i = 0; i < treeList.length; i++) {
       menuRef.value.store.nodesMap[treeList[i].id].expanded = value;
     }
-  } else if (type == "dept") {
-    let treeList = deptOptions.value;
+  } else if (type == "organization") {
+    let treeList = organizationOptions.value;
     for (let i = 0; i < treeList.length; i++) {
-      deptRef.value.store.nodesMap[treeList[i].id].expanded = value;
+      organizationRef.value.store.nodesMap[treeList[i].id].expanded = value;
     }
   }
 }
@@ -482,8 +482,8 @@ function handleCheckedTreeExpand(value, type) {
 function handleCheckedTreeNodeAll(value, type) {
   if (type == "menu") {
     menuRef.value.setCheckedNodes(value ? menuOptions.value : []);
-  } else if (type == "dept") {
-    deptRef.value.setCheckedNodes(value ? deptOptions.value : []);
+  } else if (type == "organization") {
+    organizationRef.value.setCheckedNodes(value ? organizationOptions.value : []);
   }
 }
 
@@ -491,8 +491,8 @@ function handleCheckedTreeNodeAll(value, type) {
 function handleCheckedTreeConnect(value, type) {
   if (type == "menu") {
     form.value.menuCheckStrictly = value ? true : false;
-  } else if (type == "dept") {
-    form.value.deptCheckStrictly = value ? true : false;
+  } else if (type == "organization") {
+    form.value.organizationCheckStrictly = value ? true : false;
   }
 }
 
@@ -538,22 +538,22 @@ function cancel() {
 /** 选择角色权限范围触发 */
 function dataScopeSelectChange(value) {
   if (value !== "2") {
-    deptRef.value.setCheckedKeys([]);
+    organizationRef.value.setCheckedKeys([]);
   }
 }
 
 /** 分配数据权限操作 */
 function handleDataScope(row) {
   reset();
-  const deptTreeSelect = getDeptTree(row.roleId);
+  const organizationTreeSelect = getOrganizationTree(row.roleId);
   getRole(row.roleId).then(response => {
     form.value = response.data;
     openDataScope.value = true;
     nextTick(() => {
-      deptTreeSelect.then(res => {
+      organizationTreeSelect.then(res => {
         nextTick(() => {
-          if (deptRef.value) {
-            deptRef.value.setCheckedKeys(res.checkedKeys);
+          if (organizationRef.value) {
+            organizationRef.value.setCheckedKeys(res.checkedKeys);
           }
         });
       });
@@ -565,7 +565,7 @@ function handleDataScope(row) {
 /** 提交按钮（数据权限） */
 function submitDataScope() {
   if (form.value.roleId != undefined) {
-    form.value.deptIds = getDeptAllCheckedKeys();
+    form.value.organizationIds = getOrganizationAllCheckedKeys();
     dataScope(form.value).then(response => {
       proxy.$modal.msgSuccess("修改成功");
       openDataScope.value = false;

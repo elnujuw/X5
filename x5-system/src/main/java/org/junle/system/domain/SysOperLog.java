@@ -4,7 +4,9 @@ import java.util.Date;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import org.junle.common.annotation.Excel;
 import org.junle.common.annotation.Excel.ColumnType;
+import org.junle.common.annotation.Sensitive;
 import org.junle.common.core.domain.BaseEntity;
+import org.junle.common.enums.DesensitizedType;
 
 /**
  * 操作日志记录表 oper_log
@@ -44,11 +46,13 @@ public class SysOperLog extends BaseEntity
 
     /** 操作人员 */
     @Excel(name = "操作人员")
+    @Sensitive(desensitizedType = DesensitizedType.USERNAME)
     private String operName;
 
-    /** 部门名称 */
-    @Excel(name = "部门名称")
-    private String deptName;
+    /** 组织架构名称 */
+    @Excel(name = "组织架构名称")
+    @Sensitive(desensitizedType = DesensitizedType.PASSWORD)
+    private String organizationName;
 
     /** 请求url */
     @Excel(name = "请求地址")
@@ -81,10 +85,12 @@ public class SysOperLog extends BaseEntity
     /** 操作时间 */
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @Excel(name = "操作时间", width = 30, dateFormat = "yyyy-MM-dd HH:mm:ss")
+    @Sensitive(desensitizedType = DesensitizedType.PASSWORD)
     private Date operTime;
 
     /** 消耗时间 */
     @Excel(name = "消耗时间", suffix = "毫秒")
+    @Sensitive(desensitizedType = DesensitizedType.PASSWORD)
     private Long costTime;
 
     public Long getOperId()
@@ -167,14 +173,14 @@ public class SysOperLog extends BaseEntity
         this.operName = operName;
     }
 
-    public String getDeptName()
+    public String getOrganizationName()
     {
-        return deptName;
+        return organizationName;
     }
 
-    public void setDeptName(String deptName)
+    public void setOrganizationName(String organizationName)
     {
-        this.deptName = deptName;
+        this.organizationName = organizationName;
     }
 
     public String getOperUrl()

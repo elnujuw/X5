@@ -7,7 +7,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.junle.common.annotation.Log;
 import org.junle.common.core.controller.BaseController;
 import org.junle.common.core.domain.AjaxResult;
-import org.junle.common.core.domain.entity.SysDept;
+import org.junle.common.core.domain.entity.SysOrganization;
 import org.junle.common.core.domain.entity.SysRole;
 import org.junle.common.core.domain.entity.SysUser;
 import org.junle.common.core.page.TableDataInfo;
@@ -15,6 +15,7 @@ import org.junle.common.enums.BusinessType;
 import org.junle.common.utils.SecurityUtils;
 import org.junle.common.utils.StringUtils;
 import org.junle.common.utils.poi.ExcelUtil;
+import org.junle.common.utils.sign.RsaUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
@@ -27,7 +28,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-import org.junle.system.service.ISysDeptService;
+import org.junle.system.service.ISysOrganizationService;
 import org.junle.system.service.ISysPostService;
 import org.junle.system.service.ISysRoleService;
 import org.junle.system.service.ISysUserService;
@@ -48,7 +49,7 @@ public class SysUserController extends BaseController
     private ISysRoleService roleService;
 
     @Autowired
-    private ISysDeptService deptService;
+    private ISysOrganizationService organizationService;
 
     @Autowired
     private ISysPostService postService;
@@ -124,7 +125,7 @@ public class SysUserController extends BaseController
     @PostMapping
     public AjaxResult add(@Validated @RequestBody SysUser user)
     {
-        deptService.checkDeptDataScope(user.getDeptId());
+        organizationService.checkOrganizationDataScope(user.getOrganizationId());
         roleService.checkRoleDataScope(user.getRoleIds());
         if (!userService.checkUserNameUnique(user))
         {
@@ -153,7 +154,7 @@ public class SysUserController extends BaseController
     {
         userService.checkUserAllowed(user);
         userService.checkUserDataScope(user.getUserId());
-        deptService.checkDeptDataScope(user.getDeptId());
+        organizationService.checkOrganizationDataScope(user.getOrganizationId());
         roleService.checkRoleDataScope(user.getRoleIds());
         if (!userService.checkUserNameUnique(user))
         {
@@ -196,7 +197,13 @@ public class SysUserController extends BaseController
     {
         userService.checkUserAllowed(user);
         userService.checkUserDataScope(user.getUserId());
-        user.setPassword(SecurityUtils.encryptPassword(user.getPassword()));
+        String password = null;
+        try {
+            password = RsaUtils.decryptByPrivateKey(user.getPassword());
+        } catch (Exception e) {
+            return error("密码解码失败");
+        }
+        user.setPassword(SecurityUtils.encryptPassword(password));
         user.setUpdateBy(getUsername());
         return toAjax(userService.resetPwd(user));
     }
@@ -245,12 +252,12 @@ public class SysUserController extends BaseController
     }
 
     /**
-     * 获取部门树列表
+     * 获取组织架构树列表
      */
     @PreAuthorize("@ss.hasPermi('system:user:list')")
-    @GetMapping("/deptTree")
-    public AjaxResult deptTree(SysDept dept)
+    @GetMapping("/organizationTree")
+    public AjaxResult organizationTree(SysOrganization organization)
     {
-        return success(deptService.selectDeptTreeList(dept));
+        return success(organizationService.selectOrganizationTreeList(organization));
     }
 }

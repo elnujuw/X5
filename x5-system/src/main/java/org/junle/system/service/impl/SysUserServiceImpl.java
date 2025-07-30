@@ -29,7 +29,7 @@ import org.springframework.util.CollectionUtils;
 import org.junle.system.mapper.SysPostMapper;
 import org.junle.system.mapper.SysUserRoleMapper;
 import org.junle.system.service.ISysConfigService;
-import org.junle.system.service.ISysDeptService;
+import org.junle.system.service.ISysOrganizationService;
 import org.junle.system.service.ISysUserService;
 
 /**
@@ -61,7 +61,7 @@ public class SysUserServiceImpl implements ISysUserService
     private ISysConfigService configService;
 
     @Autowired
-    private ISysDeptService deptService;
+    private ISysOrganizationService organizationService;
 
     @Autowired
     protected Validator validator;
@@ -73,7 +73,7 @@ public class SysUserServiceImpl implements ISysUserService
      * @return 用户信息集合信息
      */
     @Override
-    @DataScope(deptAlias = "d", userAlias = "u")
+    @DataScope(organizationAlias = "d", userAlias = "u")
     public List<SysUser> selectUserList(SysUser user)
     {
         return userMapper.selectUserList(user);
@@ -86,7 +86,7 @@ public class SysUserServiceImpl implements ISysUserService
      * @return 用户信息集合信息
      */
     @Override
-    @DataScope(deptAlias = "d", userAlias = "u")
+    @DataScope(organizationAlias = "d", userAlias = "u")
     public List<SysUser> selectAllocatedList(SysUser user)
     {
         return userMapper.selectAllocatedList(user);
@@ -99,7 +99,7 @@ public class SysUserServiceImpl implements ISysUserService
      * @return 用户信息集合信息
      */
     @Override
-    @DataScope(deptAlias = "d", userAlias = "u")
+    @DataScope(organizationAlias = "d", userAlias = "u")
     public List<SysUser> selectUnallocatedList(SysUser user)
     {
         return userMapper.selectUnallocatedList(user);
@@ -503,7 +503,7 @@ public class SysUserServiceImpl implements ISysUserService
                 if (StringUtils.isNull(u))
                 {
                     BeanValidators.validateWithException(validator, user);
-                    deptService.checkDeptDataScope(user.getDeptId());
+                    organizationService.checkOrganizationDataScope(user.getOrganizationId());
                     String password = configService.selectConfigByKey("sys.user.initPassword");
                     user.setPassword(SecurityUtils.encryptPassword(password));
                     user.setCreateBy(operName);
@@ -516,7 +516,7 @@ public class SysUserServiceImpl implements ISysUserService
                     BeanValidators.validateWithException(validator, user);
                     checkUserAllowed(u);
                     checkUserDataScope(u.getUserId());
-                    deptService.checkDeptDataScope(user.getDeptId());
+                    organizationService.checkOrganizationDataScope(user.getOrganizationId());
                     user.setUserId(u.getUserId());
                     user.setUpdateBy(operName);
                     userMapper.updateUser(user);

@@ -13,6 +13,7 @@ import org.junle.common.utils.SecurityUtils;
 import org.junle.common.utils.StringUtils;
 import org.junle.common.utils.file.FileUploadUtils;
 import org.junle.common.utils.file.MimeTypeUtils;
+import org.junle.common.utils.sign.RsaUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -93,6 +94,18 @@ public class SysProfileController extends BaseController
     {
         String oldPassword = params.get("oldPassword");
         String newPassword = params.get("newPassword");
+
+        try {
+            oldPassword = RsaUtils.decryptByPrivateKey(oldPassword);
+        } catch (Exception e) {
+            return AjaxResult.error("旧密码解码失败");
+        }
+        try {
+            newPassword = RsaUtils.decryptByPrivateKey(newPassword);
+        } catch (Exception e) {
+            return AjaxResult.error("新密码解码失败");
+        }
+
         LoginUser loginUser = getLoginUser();
         String userName = loginUser.getUsername();
         String password = loginUser.getPassword();

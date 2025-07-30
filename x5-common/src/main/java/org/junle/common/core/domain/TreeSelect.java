@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import org.junle.common.constant.UserConstants;
-import org.junle.common.core.domain.entity.SysDept;
+import org.junle.common.core.domain.entity.SysOrganization;
 import org.junle.common.core.domain.entity.SysMenu;
 import org.junle.common.utils.StringUtils;
 
@@ -36,12 +36,12 @@ public class TreeSelect implements Serializable
 
     }
 
-    public TreeSelect(SysDept dept)
+    public TreeSelect(SysOrganization organization)
     {
-        this.id = dept.getDeptId();
-        this.label = dept.getDeptName();
-        this.disabled = StringUtils.equals(UserConstants.DEPT_DISABLE, dept.getStatus());
-        this.children = dept.getChildren().stream().map(TreeSelect::new).collect(Collectors.toList());
+        this.id = organization.getOrganizationId();
+        this.label = organization.getOrganizationName();
+        this.disabled = StringUtils.equals(UserConstants.ORG_DISABLE, organization.getStatus());
+        this.children = organization.getChildren().stream().map(TreeSelect::new).collect(Collectors.toList());
     }
 
     public TreeSelect(SysMenu menu)

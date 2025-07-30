@@ -186,11 +186,11 @@ public class BaseController
     }
 
     /**
-     * 获取登录部门id
+     * 获取登录组织架构id
      */
-    public Long getDeptId()
+    public Long getOrganizationId()
     {
-        return getLoginUser().getDeptId();
+        return getLoginUser().getOrganizationId();
     }
 
     /**

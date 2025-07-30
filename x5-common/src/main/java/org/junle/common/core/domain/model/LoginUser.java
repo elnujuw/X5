@@ -22,9 +22,9 @@ public class LoginUser implements UserDetails
     private Long userId;
 
     /**
-     * 部门ID
+     * 组织架构ID
      */
-    private Long deptId;
+    private Long organizationId;
 
     /**
      * 用户唯一标识
@@ -81,10 +81,10 @@ public class LoginUser implements UserDetails
         this.permissions = permissions;
     }
 
-    public LoginUser(Long userId, Long deptId, SysUser user, Set<String> permissions)
+    public LoginUser(Long userId, Long organizationId, SysUser user, Set<String> permissions)
     {
         this.userId = userId;
-        this.deptId = deptId;
+        this.organizationId = organizationId;
         this.user = user;
         this.permissions = permissions;
     }
@@ -99,14 +99,14 @@ public class LoginUser implements UserDetails
         this.userId = userId;
     }
 
-    public Long getDeptId()
+    public Long getOrganizationId()
     {
-        return deptId;
+        return organizationId;
     }
 
-    public void setDeptId(Long deptId)
+    public void setOrganizationId(Long organizationId)
     {
-        this.deptId = deptId;
+        this.organizationId = organizationId;
     }
 
     public String getToken()

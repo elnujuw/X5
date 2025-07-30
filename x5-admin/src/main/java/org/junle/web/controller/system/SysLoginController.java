@@ -10,6 +10,7 @@ import org.junle.common.core.domain.entity.SysUser;
 import org.junle.common.core.domain.model.LoginBody;
 import org.junle.common.core.domain.model.LoginUser;
 import org.junle.common.utils.SecurityUtils;
+import org.junle.common.utils.sign.RsaUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -47,12 +48,21 @@ public class SysLoginController
      * @return 结果
      */
     @PostMapping("/login")
-    public AjaxResult login(@RequestBody LoginBody loginBody)
-    {
+    public AjaxResult login(@RequestBody LoginBody loginBody) throws Exception {
         AjaxResult ajax = AjaxResult.success();
+        String password = null;
+        try {
+            password = RsaUtils.decryptByPrivateKey(loginBody.getPassword());
+        } catch (Exception e) {
+            return AjaxResult.error("密码解码失败");
+        }
         // 生成令牌
-        String token = loginService.login(loginBody.getUsername(), loginBody.getPassword(), loginBody.getCode(),
-                loginBody.getUuid());
+        String token = loginService.login(
+                loginBody.getUsername(),
+                password,
+                loginBody.getCode(),
+                loginBody.getUuid()
+        );
         ajax.put(Constants.TOKEN, token);
         return ajax;
     }

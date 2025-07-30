@@ -83,6 +83,20 @@ export const constantRoutes = [
         meta: { title: '个人中心', icon: 'user' }
       }
     ]
+  },
+  {
+    path: '/demo',
+    component: Layout,
+    hidden: true,
+    redirect: 'noredirect',
+    children: [
+      {
+        path: 'test',
+        component: () => import('@/views/demo/index'),
+        name: 'Demo',
+        meta: { title: '测试', icon: 'user' }
+      }
+    ]
   }
 ]
 

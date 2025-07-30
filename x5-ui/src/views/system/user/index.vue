@@ -2,14 +2,14 @@
   <div class="app-container">
     <el-row :gutter="20">
       <splitpanes :horizontal="appStore.device === 'mobile'" class="default-theme">
-        <!--部门数据-->
+        <!--组织架构数据-->
         <pane size="16">
           <el-col>
             <div class="head-container">
-              <el-input v-model="deptName" placeholder="请输入部门名称" clearable prefix-icon="Search" style="margin-bottom: 20px" />
+              <el-input v-model="organizationName" placeholder="请输入组织架构名称" clearable prefix-icon="Search" style="margin-bottom: 20px" />
             </div>
             <div class="head-container">
-              <el-tree :data="deptOptions" :props="{ label: 'label', children: 'children' }" :expand-on-click-node="false" :filter-node-method="filterNode" ref="deptTreeRef" node-key="id" highlight-current default-expand-all @node-click="handleNodeClick" />
+              <el-tree :data="organizationOptions" :props="{ label: 'label', children: 'children' }" :expand-on-click-node="false" :filter-node-method="filterNode" ref="organizationTreeRef" node-key="id" highlight-current default-expand-all @node-click="handleNodeClick" />
             </div>
           </el-col>
         </pane>
@@ -61,7 +61,7 @@
               <el-table-column label="用户编号" align="center" key="userId" prop="userId" v-if="columns[0].visible" />
               <el-table-column label="用户名称" align="center" key="userName" prop="userName" v-if="columns[1].visible" :show-overflow-tooltip="true" />
               <el-table-column label="用户昵称" align="center" key="nickName" prop="nickName" v-if="columns[2].visible" :show-overflow-tooltip="true" />
-              <el-table-column label="部门" align="center" key="deptName" prop="dept.deptName" v-if="columns[3].visible" :show-overflow-tooltip="true" />
+              <el-table-column label="组织架构" align="center" key="organizationName" prop="organization.organizationName" v-if="columns[3].visible" :show-overflow-tooltip="true" />
               <el-table-column label="手机号码" align="center" key="phonenumber" prop="phonenumber" v-if="columns[4].visible" width="120" />
               <el-table-column label="状态" align="center" key="status" v-if="columns[5].visible">
                 <template #default="scope">
@@ -111,8 +111,8 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="归属部门" prop="deptId">
-              <el-tree-select v-model="form.deptId" :data="enabledDeptOptions" :props="{ value: 'id', label: 'label', children: 'children' }" value-key="id" placeholder="请选择归属部门" check-strictly />
+            <el-form-item label="归属组织架构" prop="organizationId">
+              <el-tree-select v-model="form.organizationId" :data="enabledOrganizationOptions" :props="{ value: 'id', label: 'label', children: 'children' }" value-key="id" placeholder="请选择归属组织架构" check-strictly />
             </el-form-item>
           </el-col>
         </el-row>
@@ -216,7 +216,7 @@
 <script setup name="User">
 import { getToken } from "@/utils/auth";
 import useAppStore from '@/store/modules/app'
-import { changeUserStatus, listUser, resetUserPwd, delUser, getUser, updateUser, addUser, deptTreeSelect } from "@/api/system/user";
+import { changeUserStatus, listUser, resetUserPwd, delUser, getUser, updateUser, addUser, organizationTreeSelect } from "@/api/system/user";
 import { Splitpanes, Pane } from "splitpanes"
 import "splitpanes/dist/splitpanes.css"
 
@@ -235,9 +235,9 @@ const multiple = ref(true);
 const total = ref(0);
 const title = ref("");
 const dateRange = ref([]);
-const deptName = ref("");
-const deptOptions = ref(undefined);
-const enabledDeptOptions = ref(undefined);
+const organizationName = ref("");
+const organizationOptions = ref(undefined);
+const enabledOrganizationOptions = ref(undefined);
 const initPassword = ref(undefined);
 const postOptions = ref([]);
 const roleOptions = ref([]);
@@ -261,7 +261,7 @@ const columns = ref([
   { key: 0, label: `用户编号`, visible: true },
   { key: 1, label: `用户名称`, visible: true },
   { key: 2, label: `用户昵称`, visible: true },
-  { key: 3, label: `部门`, visible: true },
+  { key: 3, label: `组织架构`, visible: true },
   { key: 4, label: `手机号码`, visible: true },
   { key: 5, label: `状态`, visible: true },
   { key: 6, label: `创建时间`, visible: true }
@@ -275,7 +275,7 @@ const data = reactive({
     userName: undefined,
     phonenumber: undefined,
     status: undefined,
-    deptId: undefined
+    organizationId: undefined
   },
   rules: {
     userName: [{ required: true, message: "用户名称不能为空", trigger: "blur" }, { min: 2, max: 20, message: "用户名称长度必须介于 2 和 20 之间", trigger: "blur" }],
@@ -294,9 +294,9 @@ const filterNode = (value, data) => {
   return data.label.indexOf(value) !== -1;
 };
 
-/** 根据名称筛选部门树 */
-watch(deptName, val => {
-  proxy.$refs["deptTreeRef"].filter(val);
+/** 根据名称筛选组织架构树 */
+watch(organizationName, val => {
+  proxy.$refs["organizationTreeRef"].filter(val);
 });
 
 /** 查询用户列表 */
@@ -309,22 +309,22 @@ function getList() {
   });
 };
 
-/** 查询部门下拉树结构 */
-function getDeptTree() {
-  deptTreeSelect().then(response => {
-    deptOptions.value = response.data;
-    enabledDeptOptions.value = filterDisabledDept(JSON.parse(JSON.stringify(response.data)));
+/** 查询组织架构下拉树结构 */
+function getOrganizationTree() {
+  organizationTreeSelect().then(response => {
+    organizationOptions.value = response.data;
+    enabledOrganizationOptions.value = filterDisabledOrganization(JSON.parse(JSON.stringify(response.data)));
   });
 };
 
-/** 过滤禁用的部门 */
-function filterDisabledDept(deptList) {
-  return deptList.filter(dept => {
-    if (dept.disabled) {
+/** 过滤禁用的组织架构 */
+function filterDisabledOrganization(organizationList) {
+  return organizationList.filter(organization => {
+    if (organization.disabled) {
       return false;
     }
-    if (dept.children && dept.children.length) {
-      dept.children = filterDisabledDept(dept.children);
+    if (organization.children && organization.children.length) {
+      organization.children = filterDisabledOrganization(organization.children);
     }
     return true;
   });
@@ -332,7 +332,7 @@ function filterDisabledDept(deptList) {
 
 /** 节点单击事件 */
 function handleNodeClick(data) {
-  queryParams.value.deptId = data.id;
+  queryParams.value.organizationId = data.id;
   handleQuery();
 };
 
@@ -346,8 +346,8 @@ function handleQuery() {
 function resetQuery() {
   dateRange.value = [];
   proxy.resetForm("queryRef");
-  queryParams.value.deptId = undefined;
-  proxy.$refs.deptTreeRef.setCurrentKey(null);
+  queryParams.value.organizationId = undefined;
+  proxy.$refs.organizationTreeRef.setCurrentKey(null);
   handleQuery();
 };
 
@@ -463,7 +463,7 @@ function submitFileForm() {
 function reset() {
   form.value = {
     userId: undefined,
-    deptId: undefined,
+    organizationId: undefined,
     userName: undefined,
     nickName: undefined,
     password: undefined,
@@ -533,6 +533,6 @@ function submitForm() {
   });
 };
 
-getDeptTree();
+getOrganizationTree();
 getList();
 </script>

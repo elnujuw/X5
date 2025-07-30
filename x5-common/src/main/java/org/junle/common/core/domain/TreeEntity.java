@@ -24,7 +24,7 @@ public class TreeEntity extends BaseEntity
     /** 祖级列表 */
     private String ancestors;
 
-    /** 子部门 */
+    /** 子组织架构 */
     private List<?> children = new ArrayList<>();
 
     public String getParentName()
