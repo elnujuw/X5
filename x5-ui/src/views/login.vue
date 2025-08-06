@@ -168,9 +168,12 @@ getCookie();
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100%;
+  height: 100vh;
+  width: 100vw;
   background-image: url("../assets/images/login-background.jpg");
   background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
 }
 .title {
   margin: 0px auto 30px auto;
