@@ -2,7 +2,7 @@
   <div class="app-container home">
     <el-row :gutter="20">
       <el-col :sm="24" :lg="12" style="padding-left: 20px">
-        <h2>X5管理框架</h2>
+        <h2>X5后台管理框架</h2>
       </el-col>
 
       <el-col :sm="24" :lg="12" style="padding-left: 50px">

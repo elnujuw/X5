@@ -10,7 +10,7 @@
 
     <name>X5</name>
     <url>http://junle.org</url>
-    <description>X5管理系统</description>
+    <description>X5后台管理系统</description>
     
     <properties>
         <x5.version>1.0.0</x5.version>
