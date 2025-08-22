@@ -155,7 +155,7 @@ public class EncryptDataAspect {
     }
 
     /**
-     * 判断是否需要加密参数
+     * 自动模式下根据方法名判断是否需要加密参数
      */
     private boolean shouldEncryptParams(String methodName, ProcessType processType) {
         if (processType == ProcessType.ENCRYPT) {
@@ -170,7 +170,7 @@ public class EncryptDataAspect {
     }
 
     /**
-     * 判断是否需要解密返回值
+     * 自动模式下根据方法名判断是否需要解密返回值
      */
     private boolean shouldDecryptResult(String methodName, ProcessType processType) {
         if (processType == ProcessType.DECRYPT) {
