@@ -1,13 +1,13 @@
 package org.junle.common.utils.ip;
 
 import org.junle.common.config.X5Config;
-import org.junle.common.constant.Constants;
-import org.junle.common.utils.http.HttpUtils;
+import org.junle.common.utils.RegionUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.alibaba.fastjson2.JSON;
-import com.alibaba.fastjson2.JSONObject;
 import org.junle.common.utils.StringUtils;
+
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 /**
  * 获取地址类
@@ -18,14 +18,12 @@ public class AddressUtils
 {
     private static final Logger log = LoggerFactory.getLogger(AddressUtils.class);
 
-    // IP地址查询
-    public static final String IP_URL = "http://whois.pconline.com.cn/ipJson.jsp";
-
     // 未知地址
     public static final String UNKNOWN = "XX XX";
 
     public static String getRealAddressByIP(String ip)
     {
+        String address = UNKNOWN;
         // 内网不查询
         if (IpUtils.internalIp(ip))
         {
@@ -35,22 +33,23 @@ public class AddressUtils
         {
             try
             {
-                String rspStr = HttpUtils.sendGet(IP_URL, "ip=" + ip + "&json=true", Constants.GBK);
+                String rspStr = RegionUtil.getRegion(ip);
                 if (StringUtils.isEmpty(rspStr))
                 {
                     log.error("获取地理位置异常 {}", ip);
                     return UNKNOWN;
                 }
-                JSONObject obj = JSON.parseObject(rspStr);
-                String region = obj.getString("pro");
-                String city = obj.getString("city");
-                return String.format("%s %s", region, city);
+                String[] obj = rspStr.split("\\|");
+                return Arrays.stream(obj)
+                        .filter(element -> !"0".equals(element))
+                        .collect(Collectors.joining(" "));
             }
             catch (Exception e)
             {
-                log.error("获取地理位置异常 {}", ip);
+                log.error("获取地理位置异常 {}", e);
             }
         }
-        return UNKNOWN;
+        return address;
     }
 }
+
